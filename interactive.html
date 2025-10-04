@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ទម្រង់បញ្ចេញសម្ភារៈទំនិញ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    body {
+        font-family: 'Khmer OS Siemreap', 'Khmer OS Battambang', 'Khmer OS', Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+    }
+    
+    .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .header {
+        background: #4a5568;
+        color: white;
+        padding: 20px 30px;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .form-section {
+        padding: 30px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #4a5568;
+    }
+    
+    .import-section {
+        padding: 30px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .import-section h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #374151;
+    }
+    
+    .import-box {
+        background: white;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .import-box h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #4a5568;
+    }
+    
+    .import-box p {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+    
+    #pasteArea {
+        width: 100%;
+        height: 200px;
+        margin-bottom: 12px;
+        font-family: monospace;
+        font-size: 12px;
+        resize: vertical;
+        padding: 10px;
+        border: 2px dashed #d1d5db;
+        border-radius: 4px;
+    }
+    
+    .btn {
+        background: #4a5568;
+        color: white;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .btn:hover {
+        background: #2d3748;
+    }
+    
+    .btn-export {
+        background: #059669;
+    }
+    
+    .btn-export:hover {
+        background: #047857;
+    }
+    
+    .btn-clear {
+        background: #dc2626;
+    }
+    
+    .btn-clear:hover {
+        background: #b91c1c;
+    }
+    
+    #importStatus {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 13px;
+        display: none;
+    }
+    
+    #importStatus.success {
+        background: #d1fae5;
+        color: #065f46;
+        display: block;
+    }
+    
+    #importStatus.error {
+        background: #fee2e2;
+        color: #991b1b;
+        display: block;
+    }
+    
+    .table-section {
+        padding: 30px;
+        overflow-x: auto;
+    }
+    
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .table-header h2 {
+        font-size: 18px;
+        color: #374151;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1400px;
+    }
+    
+    thead {
+        background: #f9fafb;
+    }
+    
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 13px;
+    }
+    
+    th {
+        color: #374151;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    tbody tr:hover {
+        background: #f9fafb;
+    }
+    
+    .btn-delete {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    .btn-delete:hover {
+        background: #b91c1c;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+</style></head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ទម្រង់បញ្ចេញសម្ភារៈទំនិញ</h1>
+        </div>
+    <div class="form-section">
+        <form id="dataForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="no">ល.រ *</label>
+                    <input type="text" id="no" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">បរិយាយ *</label>
+                    <input type="text" id="description" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="unit">ឯកតាគិត *</label>
+                    <input type="text" id="unit" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qtyRequested">ចំនួនសំណូមពរ *</label>
+                    <input type="number" id="qtyRequested" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qtyActual">ចំនួនបញ្ចេញពិត *</label>
+                    <input type="number" id="qtyActual" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="unitPrice">តម្លៃរាយ *</label>
+                    <input type="number" id="unitPrice" required step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="totalPrice">តម្លៃសរុប</label>
+                    <input type="number" id="totalPrice" readonly step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="receiptNo">លេខប័ណ្ណបញ្ចេញ *</label>
+                    <input type="text" id="receiptNo" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">កាលបរិច្ឆេទ *</label>
+                    <input type="text" id="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userName">ឈ្មោះ និងផ្នែកប្រើប្រាស់ *</label>
+                    <input type="text" id="userName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">មុខសញ្ញាប្រើប្រាស់ *</label>
+                    <input type="text" id="category" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="referenceNo">យោងពីប័ណ្ណ​បញ្ចូល *</label>
+                    <input type="text" id="referenceNo" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn" style="margin-top: 20px;">បញ្ចូលទិន្នន័យ</button>
+        </form>
+    </div>
+    
+    <div class="import-section">
+        <h2>នាំចូលទិន្នន័យ</h2>
+        <div class="import-box">
+            <h3>បិទភ្ជាប់ទិន្នន័យពី Excel</h3>
+            <p>ចម្លងទិន្នន័យទាំងអស់ពី Excel (រួមទាំងចំណងជើង) ហើយបិទភ្ជាប់ទីនេះ</p>
+            <textarea id="pasteArea" placeholder="បិទភ្ជាប់ទិន្នន័យទីនេះ...&#10;&#10;ឧទាហរណ៍:&#10;ល.រ បរិយាយ ឯកតាគិត ចំនួនសំណូមពរ ចំនួនបញ្ចេញពិត តម្លៃរាយ តម្លៃសរុប ..."></textarea>
+            <button class="btn" onclick="importFromPaste()">នាំចូលទិន្នន័យ</button>
+            <div id="importStatus"></div>
+        </div>
+    </div>
+    
+    <div class="table-section">
+        <div class="table-header">
+            <h2>តារាងទិន្នន័យ (<span id="recordCount">0</span> កំណត់ត្រា)</h2>
+            <div class="action-buttons">
+                <button class="btn btn-export" onclick="exportToExcel()">នាំចេញទៅ Excel</button>
+                <button class="btn btn-clear" onclick="clearAllData()">លុបទាំងអស់</button>
+            </div>
+        </div>
+        
+        <div id="tableContainer"></div>
+    </div>
+</div>
+
+<script>
+    let dataStore = [];
+    
+    // Auto-calculate total
+    document.getElementById('qtyActual').addEventListener('input', calculateTotal);
+    document.getElementById('unitPrice').addEventListener('input', calculateTotal);
+    
+    function calculateTotal() {
+        const qty = parseFloat(document.getElementById('qtyActual').value) || 0;
+        const price = parseFloat(document.getElementById('unitPrice').value) || 0;
+        document.getElementById('totalPrice').value = (qty * price).toFixed(2);
+    }
+    
+    document.getElementById('dataForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        dataStore.push({
+            no: document.getElementById('no').value,
+            description: document.getElementById('description').value,
+            unit: document.getElementById('unit').value,
+            qtyRequested: document.getElementById('qtyRequested').value,
+            qtyActual: document.getElementById('qtyActual').value,
+            unitPrice: parseFloat(document.getElementById('unitPrice').value),
+            totalPrice: parseFloat(document.getElementById('totalPrice').value),
+            receiptNo: document.getElementById('receiptNo').value,
+            date: document.getElementById('date').value,
+            userName: document.getElementById('userName').value,
+            category: document.getElementById('category').value,
+            referenceNo: document.getElementById('referenceNo').value
+        });
+        
+        renderTable();
+        this.reset();
+    });
+    
+    function parseKhmerNumber(str) {
+        if (!str) return 0;
+        const cleaned = str.toString().replace(/[៛,\s]/g, '');
+        const num = parseFloat(cleaned);
+        return isNaN(num) ? 0 : num;
+    }
+    
+    function formatKhmerCurrency(num) {
+        return parseFloat(num).toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }) + ' ៛';
+    }
+    
+    function renderTable() {
+        const container = document.getElementById('tableContainer');
+        document.getElementById('recordCount').textContent = dataStore.length;
+        
+        if (dataStore.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <div style="font-size: 16px; margin-bottom: 5px;">មិនទាន់មានទិន្នន័យ</div>
+                    <div style="font-size: 13px;">សូមបំពេញទម្រង់ឬបិទភ្ជាប់ទិន្នន័យពី Excel</div>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `<table><thead><tr>
+            <th>ល.រ</th>
+            <th>បរិយាយ</th>
+            <th>ឯកតាគិត</th>
+            <th>ចំនួនសំណូមពរ</th>
+            <th>ចំនួនបញ្ចេញពិត</th>
+            <th>តម្លៃរាយ</th>
+            <th>តម្លៃសរុប</th>
+            <th>លេខប័ណ្ណបញ្ចេញ</th>
+            <th>កាលបរិច្ឆេទ</th>
+            <th>ឈ្មោះ និងផ្នែកប្រើប្រាស់</th>
+            <th>មុខសញ្ញាប្រើប្រាស់</th>
+            <th>យោងពីប័ណ្ណ​បញ្ចូល</th>
+            <th>សកម្មភាព</th>
+        </tr></thead><tbody>`;
+        
+        dataStore.forEach((item, index) => {
+            html += `<tr>
+                <td>${item.no}</td>
+                <td>${item.description}</td>
+                <td>${item.unit}</td>
+                <td>${item.qtyRequested}</td>
+                <td>${item.qtyActual}</td>
+                <td>${formatKhmerCurrency(item.unitPrice)}</td>
+                <td>${formatKhmerCurrency(item.totalPrice)}</td>
+                <td>${item.receiptNo}</td>
+                <td>${item.date}</td>
+                <td>${item.userName}</td>
+                <td>${item.category}</td>
+                <td>${item.referenceNo}</td>
+                <td><button class="btn-delete" onclick="deleteEntry(${index})">លុប</button></td>
+            </tr>`;
+        });
+        
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+    
+    function importFromPaste() {
+        const text = document.getElementById('pasteArea').value.trim();
+        const status = document.getElementById('importStatus');
+        
+        if (!text) {
+            status.className = 'error';
+            status.textContent = '⚠️ សូមបិទភ្ជាប់ទិន្នន័យ';
+            return;
+        }
+        
+        try {
+            const lines = text.split('\n').filter(l => l.trim());
+            let imported = 0;
+            let skipped = 0;
+            
+            lines.forEach((line, idx) => {
+                const cols = line.split('\t');
+                
+                if (idx === 0 && (cols[0] === 'ល.រ' || cols[0].includes('ល.រ'))) {
+                    return;
+                }
+                
+                if (cols.length >= 12) {
+                    dataStore.push({
+                        no: cols[0] || '',
+                        description: cols[1] || '',
+                        unit: cols[2] || '',
+                        qtyRequested: cols[3] || '',
+                        qtyActual: cols[4] || '',
+                        unitPrice: parseKhmerNumber(cols[5]),
+                        totalPrice: parseKhmerNumber(cols[6]),
+                        receiptNo: cols[7] || '',
+                        date: cols[8] || '',
+                        userName: cols[9] || '',
+                        category: cols[10] || '',
+                        referenceNo: cols[11] || ''
+                    });
+                    imported++;
+                } else {
+                    skipped++;
+                }
+            });
+            
+            renderTable();
+            document.getElementById('pasteArea').value = '';
+            
+            status.className = 'success';
+            status.textContent = `✅ នាំចូលជោគជ័យ ${imported} កំណត់ត្រា` + 
+                (skipped > 0 ? ` (រំលង ${skipped} ជួរមិនត្រឹមត្រូវ)` : '');
+            
+        } catch (error) {
+            status.className = 'error';
+            status.textContent = '❌ កំហុសក្នុងការនាំចូល: ' + error.message;
+        }
+    }
+    
+    function exportToExcel() {
+        if (dataStore.length === 0) {
+            alert('មិនមានទិន្នន័យសម្រាប់នាំចេញ');
+            return;
+        }
+        
+        let csv = 'ល.រ\tបរិយាយ\tឯកតាគិត\tចំនួនសំណូមពរ\tចំនួនបញ្ចេញពិត\tតម្លៃរាយ\tតម្លៃសរុប\tលេខប័ណ្ណបញ្ចេញ\tកាលបរិច្ឆេទ\tឈ្មោះ និងផ្នែកប្រើប្រាស់\tមុខសញ្ញាប្រើប្រាស់\tយោងពីប័ណ្ណ​បញ្ចូល\n';
+        
+        dataStore.forEach(item => {
+            csv += `${item.no}\t${item.description}\t${item.unit}\t${item.qtyRequested}\t${item.qtyActual}\t${formatKhmerCurrency(item.unitPrice)}\t${formatKhmerCurrency(item.totalPrice)}\t${item.receiptNo}\t${item.date}\t${item.userName}\t${item.category}\t${item.referenceNo}\n`;
+        });
+        
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `data_export_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        
+        alert(`✅ នាំចេញជោគជ័យ ${dataStore.length} កំណត់ត្រា`);
+    }
+    
+    function deleteEntry(index) {
+        if (confirm('តើអ្នកប្រាកដថាចង់លុបកំណត់ត្រានេះទេ?')) {
+            dataStore.splice(index, 1);
+            renderTable();
+        }
+    }
+    
+    function clearAllData() {
+        if (dataStore.length === 0) {
+            alert('មិនមានទិន្នន័យសម្រាប់លុប');
+            return;
+        }
+        
+        if (confirm(`តើអ្នកប្រាកដថាចង់លុបទិន្នន័យទាំងអស់ (${dataStore.length} កំណត់ត្រា) ទេ?`)) {
+            dataStore = [];
+            renderTable();
+            document.getElementById('importStatus').style.display = 'none';
+        }
+    }
+    
+    renderTable();
+</script></body>
+</html>
